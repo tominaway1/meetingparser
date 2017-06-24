@@ -34,4 +34,4 @@ def identify(request):
         except Exception as e:
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
             return HttpResponse("[Errno {0}] {1}".format(e.errno, e.strerror))
-    return HttpResponse("Success")
+    return HttpResponse(data)

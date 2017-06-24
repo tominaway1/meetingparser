@@ -1,4 +1,5 @@
 import http.client, urllib.request, urllib.parse, urllib.error, base64, json
+import time
 
 __subscription_key = 'dc67fc9d2c4241ab90d804ee9f8b7276'
 
@@ -193,8 +194,11 @@ def is_result_status_succeeded(result):
     
 def identify(profiles, audio_file_path):
     op_id = op_location_to_identify(profiles, audio_file_path)
+    print('Checking operation status...')
     result = get_operation_status(op_id)
     while not is_result_status_succeeded(result):
+        time.sleep(5)
+        print('Checking operation status...')
         result = get_operation_status(op_id)
     print(result)
     return result

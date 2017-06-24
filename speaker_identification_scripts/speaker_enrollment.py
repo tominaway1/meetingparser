@@ -1,15 +1,6 @@
 import http.client, urllib.request, urllib.parse, urllib.error, base64
 
-headers = {
-    # Request headers
-    'Content-Type': 'multipart/form-data',
-    'Ocp-Apim-Subscription-Key': 'dc67fc9d2c4241ab90d804ee9f8b7276',
-}
 
-params = urllib.parse.urlencode({
-    # Request parameters
-    'shortAudio': 'true',
-})
 
 with open('/Users/shuyangsun/Desktop/shuyang_enrollment_audio.wav', 'rb') as audio_file:
     try:

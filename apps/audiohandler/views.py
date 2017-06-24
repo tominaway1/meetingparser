@@ -2,12 +2,19 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import os.path
 import http.client, urllib.request, urllib.parse, urllib.error, base64
+import json
 
 headers = {
     # Request headers
     'Content-Type': 'multipart/form-data',
     'Ocp-Apim-Subscription-Key': 'dc67fc9d2c4241ab90d804ee9f8b7276',
 }
+
+headers1 = {
+    # Request headers
+    'Ocp-Apim-Subscription-Key': 'dc67fc9d2c4241ab90d804ee9f8b7276',
+}
+
 
 params = urllib.parse.urlencode({
     # Request parameters
@@ -35,3 +42,22 @@ def identify(request):
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
             return HttpResponse("[Errno {0}] {1}".format(e.errno, e.strerror))
     return HttpResponse(data)
+
+def get_all_profile(request):
+    try:
+        conn = http.client.HTTPSConnection('westus.api.cognitive.microsoft.com')
+        conn.request("GET", "/spid/v1.0/identificationProfiles?%s" % params, body='', headers=headers1)
+        response = conn.getresponse()
+
+        # Get profile information received from the get all profiles portion of api
+        data = response.read()
+        j= json.loads(data)
+        for i in j:
+            print (i["identificationProfileId"])
+
+        conn.close()
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+        HttpResponse("[Errno {0}] {1}")
+
+    return HttpResponse(j)

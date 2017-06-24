@@ -155,10 +155,11 @@ def op_location_to_identify(profiles, audio_file_path):
             conn.request("POST", "/spid/v1.0/identify?identificationProfileIds={0}&{1}".format(ids_str, __params_with_audio), body=bin_data, headers=__headers_with_audio)
             response = conn.getresponse()
             header = response.getheader('Operation-Location')
-            op_location = header.rsplit('/', 1)[-1]
-            conn.close()
-            print('Retrived operation location {0}.'.format(op_location))
-            return op_location
+            if header is not None:
+                op_location = header.rsplit('/', 1)[-1]
+                conn.close()
+                print('Retrived operation location {0}.'.format(op_location))
+                return op_location
         except Exception as e:
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
@@ -208,17 +209,9 @@ if __name__=='__main__':
     
     file_path_start = '/Users/shuyangsun/Developer/hackathon_projects/meetingparser/apps/audiohandler/audio_files/'
     
-    print('Identifying Shuyang...')
-    identify(profiles, file_path_start + 'shuyang_enrollment.wav')
-    print()
-    
-    print('Identifying Shan...')
-    identify(profiles, file_path_start + 'shan_enrollment.wav')
-    print()
-    
-    print('Identifying Sean...')
-    identify(profiles, file_path_start + 'sean_enrollment.wav')
-    print()
-    
-
+    for name in ('shuayng', 'sean', 'shan'):
+        print('Identifying {0}...'.format(name))
+        identify(profiles, file_path_start + '{0}_enrollment.wav'.format(name))
+        identify(profiles, file_path_start + 'arts_{0}.wav'.format(name))
+        print()
 

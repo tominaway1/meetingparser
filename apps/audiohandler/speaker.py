@@ -21,6 +21,11 @@ __params_with_audio = urllib.parse.urlencode({
 
 __connection_url = 'westus.api.cognitive.microsoft.com'
 
+key_status = 'status'
+key_processing_result = 'processingResult'
+key_confidence = 'confidence'
+key_identified_profile_id = 'identifiedProfileId'
+
 class SpeakerProfile:
     def __init__(self, profile):
         self.json_data = profile
@@ -139,18 +144,81 @@ def enroll(profile, audio_file_path):
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
     
 
-def identify(profiles, audio_file_path):
+def op_location_to_identify(profiles, audio_file_path):
     print('Identifying audio file...')
     profile_ids = get_profile_ids(profiles)
     with open(audio_file_path, 'rb') as audio_file:
         try:
             bin_data = audio_file.read()
             conn = http.client.HTTPSConnection(__connection_url)
-            conn.request("POST", "/spid/v1.0/identify?identificationProfileIds={0}&{1}".format(profile_ids.join(', '), __params_with_audio), body=bin_data, headers=__headers_with_audio)
+            ids_str = ','.join(profile_ids)
+            conn.request("POST", "/spid/v1.0/identify?identificationProfileIds={0}&{1}".format(ids_str, __params_with_audio), body=bin_data, headers=__headers_with_audio)
             response = conn.getresponse()
-            data = response.read()
-            print(data)
+            header = response.getheader('Operation-Location')
+            op_location = header.rsplit('/', 1)[-1]
             conn.close()
-            print('Identified audio file as [{0}].'.format('TODO'))
+            print('Retrived operation location {0}.'.format(op_location))
+            return op_location
         except Exception as e:
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+def get_operation_status(operation_id):
+    try:
+        conn = http.client.HTTPSConnection(__connection_url)
+        conn.request("GET", "/spid/v1.0/operations/{0}?{1}".format(operation_id, __params), body=None, headers=__headers)
+        response = conn.getresponse()
+        data = response.read()
+        dictionary = json.loads(data)
+        conn.close()
+        key_processing_result = 'processingResult'
+        if not key_status in dictionary:
+            return None
+        if key_processing_result in dictionary:
+            return {
+                key_status: dictionary[key_status],
+                key_identified_profile_id: dictionary[key_processing_result][key_identified_profile_id],
+                key_confidence: dictionary[key_processing_result][key_confidence]
+            }
+        else:
+            return {
+                key_status: dictionary[key_status]
+            }
+        
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+def is_result_status_succeeded(result):
+    return (result is not None) and (result['status'] == 'succeeded')
+    
+def identify(profiles, audio_file_path):
+    op_id = op_location_to_identify(profiles, audio_file_path)
+    result = get_operation_status(op_id)
+    while not is_result_status_succeeded(result):
+        result = get_operation_status(op_id)
+    print(result)
+    return result
+
+if __name__=='__main__':
+    profiles = get_all_profiles()
+    for ele in profiles:
+        print()
+        print(ele)
+
+    print()
+    
+    file_path_start = '/Users/shuyangsun/Developer/hackathon_projects/meetingparser/apps/audiohandler/audio_files/'
+    
+    print('Identifying Shuyang...')
+    identify(profiles, file_path_start + 'shuyang_enrollment.wav')
+    print()
+    
+    print('Identifying Shan...')
+    identify(profiles, file_path_start + 'shan_enrollment.wav')
+    print()
+    
+    print('Identifying Sean...')
+    identify(profiles, file_path_start + 'sean_enrollment.wav')
+    print()
+    
+
+

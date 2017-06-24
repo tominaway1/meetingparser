@@ -209,9 +209,10 @@ if __name__=='__main__':
     
     file_path_start = '/Users/shuyangsun/Developer/hackathon_projects/meetingparser/apps/audiohandler/audio_files/'
     
-    for name in ('shuayng', 'sean', 'shan'):
+    for name in ['shuyang', 'sean', 'shan']:
         print('Identifying {0}...'.format(name))
         identify(profiles, file_path_start + '{0}_enrollment.wav'.format(name))
         identify(profiles, file_path_start + 'arts_{0}.wav'.format(name))
         print()
+
 

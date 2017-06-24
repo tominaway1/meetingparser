@@ -51,7 +51,7 @@ def get_all_profile(request):
 
         # Get profile information received from the get all profiles portion of api
         data = response.read()
-        j= json.loads(data)
+        j = json.loads(data)
         for i in j:
             print (i["identificationProfileId"])
 
@@ -60,4 +60,4 @@ def get_all_profile(request):
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
         HttpResponse("[Errno {0}] {1}")
 
-    return HttpResponse(j)
+    return HttpResponse(data, content_type="application/json")

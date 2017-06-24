@@ -37,7 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hello'
+    'apps.audiohandler',
+    'apps.texthandler'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -112,7 +113,7 @@ USE_TZ = True
 
 
 # Update database configuration with $DATABASE_URL.
-db_from_env = dj_database_url.config(conn_max_age=500)
+db_from_env = dj_database_url.config(default='postgres://nceqkcxqkmzjrg:2b24e9840202dbeab97a93d8c99764d18a60bbdcaeb81dc0b489f411bd8f1f69@ec2-107-22-250-33.compute-1.amazonaws.com:5432/dbjaffkmstkruu', conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()

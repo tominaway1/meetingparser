@@ -28,9 +28,9 @@ class TextBlock(models.Model):
     audio = models.ForeignKey(Audio, null=False)
     user = models.ForeignKey(UserProfile, blank=True, null=True)
     filename = models.CharField(max_length=1000)
-
+    content = models.CharField(max_length=5000, blank = True, null=True)
 
     def __unicode__(self):
-        return self.audio.filename + str(self.sequence_number)
+        return self.audio.filename + "-" + str(self.sequence_number)
     def __str__(self):
-        return self.audio.filename + str(self.sequence_number)
+        return self.audio.filename + "-" + str(self.sequence_number)

@@ -5,6 +5,7 @@ import http.client, urllib.request, urllib.parse, urllib.error, base64
 import json, uuid
 from . import parse_audio, speaker
 from apps.texthandler.models import *
+from apps.texthandler.wrapper import *
 
 headers = {
     # Request headers
@@ -87,3 +88,19 @@ def identify_audio_file(request, audio_uuid):
 
     return HttpResponse("Success")
 
+def translate_audio_file(request, audio_uuid):
+    audio = Audio.objects.filter(uuid=uuid.UUID(audio_uuid))[0]
+    text_blocks = TextBlock.objects.filter(audio=audio)
+    ms_asr = Microsoft_ASR()
+    ms_asr.get_speech_token()
+
+    for text_block in text_blocks:
+        filename = text_block.filename
+        filepath = '{}/{}/{}'.format(SITE_ROOT, 'audio_files', filename)
+        print(filepath)
+        text, confidence = ms_asr.transcribe(filepath)
+        print("text:" + text)
+        text_block.content = text
+        text_block.save()
+
+    return HttpResponse("Success")

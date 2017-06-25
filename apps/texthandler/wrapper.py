@@ -59,6 +59,8 @@ class Microsoft_ASR():
                             data=stream_audio_file(speech_file), 
                             headers=headers)
         val = json.loads(resp.text)
+        if "results" not in val:
+            return "", 100
         return val["results"][0]["name"], val["results"][0]["confidence"]
 
 if __name__ == "__main__":

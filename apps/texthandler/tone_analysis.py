@@ -35,8 +35,10 @@ def get_tone(text):
     res = conn.getresponse()
     data = res.read()
     data=json.loads(data)
-    d=data['document_tone']
-    
+    if 'document_tone' in data:
+        d=data['document_tone']
+    else:
+        return {}
     tone_categories=d['tone_categories']
     #print(tone_categories)
     # for a in tone_categories[0]['tones']:

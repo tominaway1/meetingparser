@@ -18,7 +18,7 @@ def handle(request):
         return HttpResponse(url)
 
     response = VoiceResponse()
-    response.say("Yo, say some shit man")
+    response.say("Starting recording now. Hang up when you are done")
     response.record(timeout=30, transcribe=True)
 
     return HttpResponse(response)

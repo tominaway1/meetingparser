@@ -2,7 +2,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import os.path
 import http.client, urllib.request, urllib.parse, urllib.error, base64
-import json
+import json, uuid
+from . import parse_audio, speaker
+from apps.texthandler.models import *
 
 headers = {
     # Request headers
@@ -61,3 +63,27 @@ def get_all_profile(request):
         HttpResponse("[Errno {0}] {1}")
 
     return HttpResponse(data, content_type="application/json")
+
+def split_audio_file(request, audio_uuid):
+    parse_audio.split_file(audio_uuid, '{}/{}/'.format(SITE_ROOT, 'audio_files'))
+    return HttpResponse("Success")
+
+def identify_audio_file(request, audio_uuid):
+    audio = Audio.objects.filter(uuid=uuid.UUID(audio_uuid))[0]
+    profiles = speaker.get_all_profiles()
+    print(profiles)
+    text_blocks = TextBlock.objects.filter(audio=audio)
+
+    for text_block in text_blocks:
+        filename = text_block.filename
+        filepath = '{}/{}/{}'.format(SITE_ROOT, 'audio_files', filename)
+        print(filepath)
+        result = speaker.identify(profiles, filepath)
+        identifer = result['identifiedProfileId']
+        users = UserProfile.objects.filter(identification_profile_id=identifer)
+        if users is not None and len(users) > 0:
+            text_block.user = users[0]
+            text_block.save()
+
+    return HttpResponse("Success")
+

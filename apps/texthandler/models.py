@@ -31,6 +31,6 @@ class TextBlock(models.Model):
 
 
     def __unicode__(self):
-        return self.audio + str(self.sequence_number)
+        return self.audio.filename + str(self.sequence_number)
     def __str__(self):
-        return self.audio + str(self.sequence_number)
+        return self.audio.filename + str(self.sequence_number)

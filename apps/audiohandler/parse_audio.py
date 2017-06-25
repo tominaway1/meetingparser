@@ -28,6 +28,9 @@ def split_file(audio_uuid, file_dir):
     text_block.save()
 
     ofile.setparams(ifile.getparams())
+    ofile.setframerate(16000)
+    ofile.setsampwidth(2)
+    ofile.setnchannels(1)
     for i in range(ifile.getnframes()):
         if math.floor(i / j) == FRAME_SIZE:
             j += 1
@@ -46,6 +49,7 @@ def split_file(audio_uuid, file_dir):
         oframe += dc
         oframe = struct.pack(fmt, math.ceil(oframe))
 
+        ofile.writeframes(oframe)
         ofile.writeframes(oframe)
 
     ifile.close()

@@ -3,9 +3,12 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from twilio.twiml.voice_response import Record, VoiceResponse
 from apps.texthandler.models import Audio
-import uuid
+import uuid, os
+from django.conf import settings
 
 number = '+14752060691'
+
+SITE_ROOT = settings.BASE_DIR
 
 @csrf_exempt
 def handle(request):
@@ -49,7 +52,8 @@ def create_audio(url):
     data = res.read()
     audio = Audio(uuid=uuid.uuid4())
     filename = "{}{}".format(str(audio.uuid),".wav")
-    path = './apps/audiohandler/audio_files/{}'.format(filename)
+
+    path = SITE_ROOT + '/apps/audiohandler/audio_files/{}'.format(filename)
     f = open(path, 'wb')
     f.write(data)
 

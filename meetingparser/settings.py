@@ -38,7 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.audiohandler',
-    'apps.texthandler'
+    'apps.texthandler',
+    'apps.twilio_app'
 )
 
 MIDDLEWARE_CLASSES = (

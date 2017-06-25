@@ -26,7 +26,7 @@ class Audio(models.Model):
 class TextBlock(models.Model):
     sequence_number = models.IntegerField(default=0, null=False)
     audio = models.ForeignKey(Audio, null=False)
-    user = models.ForeignKey(UserProfile, null=True)
+    user = models.ForeignKey(UserProfile, blank=True, null=True)
     filename = models.CharField(max_length=1000)
 
 
